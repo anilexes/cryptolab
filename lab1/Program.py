@@ -4,6 +4,7 @@ import codecs
 import pprint
 import copy
 import string
+import operator
 
 alphabet = [
     'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 
@@ -125,7 +126,7 @@ def vzlom():
     ru_words = read_file("ru.dic").split() # Список русских слов
     
     # read encrypted text
-    encrypted_text = read_file("Зашифрованный.txt").lower()
+    encrypted_text = read_file("Вариант 3.txt").lower()
 
     # count chastots in the text
     encrypted_ch = {}
@@ -149,10 +150,12 @@ def vzlom():
     sorted_chastota = keys_sorted_by_value(chastota)
     sorted_encrypt_ch = keys_sorted_by_value(encrypted_ch)
     result_str = ""
+    found_translations = {}
     for letter in encrypted_text:
         if letter in sorted_encrypt_ch:
             indx = sorted_encrypt_ch.index(letter)
             new_letter = sorted_chastota[indx]
+            found_translations[letter] = new_letter
             result_str += new_letter
         else:
             result_str += letter
@@ -176,12 +179,29 @@ def vzlom():
     break_cnt = 0
     print(encrypted_text)
     print(result_str)
-
+    print(sorted(encrypted_ch.items(), key=operator.itemgetter(1)))
+    print(sorted(chastota.items(), key=operator.itemgetter(1)))
     # basic replacement is done
     
+    
+
     words = []
-    found_translations = {}
     translator = str.maketrans('','',string.punctuation)
+    encrypted_text = translate(encrypted_text, {' ': '_'})
+    print(encrypted_text)
+    while True:
+        print(found_translations)
+        letter1 = input('first letter: ')
+        letter2 = input('second letter: ')
+        ft = copy.deepcopy(found_translations)
+        ft[letter1] = letter2
+        txt = translate(encrypted_text, {letter1: letter2.upper()})
+        print(txt)
+        fine = input("Fine?: ")
+        if fine == 'y':
+            found_translations[letter1] = letter2
+            encrypted_text = txt
+
     for word in result_str.split():
         print("Уже удалось расшифровать:")
         pprint(found_translations)
