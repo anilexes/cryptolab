@@ -13,8 +13,8 @@ class LFSR:
         self.initstate = initstate
         self.polinom = polinom
         self.state = self.initstate.astype(int)
-        self.count = 0
-        self.sequence = np.array(-1)
+        self.count = 1
+        self.sequence = self.polinom[-1]
         self.outbit = -1
         self.feedbackbit = -1
         self.M = self.initstate.shape[0]
