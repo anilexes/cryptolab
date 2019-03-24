@@ -1,9 +1,4 @@
-# Задание 1
-# ======================================
-# необходимо установить пакет numpy
-# > pip install numpy
-# numpy позволяет производить работу с массивами данных быстрее, чем со списками python
-
+# 1
 from lfsr import make_M_sequence
 
 START_FILE = 'start.txt'
