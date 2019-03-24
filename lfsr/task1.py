@@ -4,38 +4,31 @@
 # > pip install numpy
 # numpy позволяет производить работу с массивами данных быстрее, чем со списками python
 
-import numpy as np
-from math import ceil
-from lfsr import LFSR, make_M_sequence
+from lfsr import make_M_sequence
 
-KEY_FILE = 'key.txt'
+START_FILE = 'start.txt'
 
 # Начальную последовательность можно считать
-load = input("Считать изначальную последовательность (y/n)? ")
+r = input("Считать стартовую последовательность (y/n)? ")
 
 # Если ответим "нет", то будет генерироваться рандомно
-initstate = []
+starting = []
 
-if load == 'y':
-	with open(KEY_FILE, 'r') as key_file:
-		initstate = [int(x) for x in list(key_file.read())]
+if r == 'y':
+	with open(START_FILE, 'r') as start_file:
+		starting = [int(x) for x in list(start_file.read())]
 
-print(initstate)
-
-sequence, M = make_M_sequence(polinom=[4,1], starting=np.array(initstate))
+num = int(input("Количество битов на вывод: "))
+sequence, M, starting = make_M_sequence(polinom=[7,1], starting=starting, N=num)
 # Вывод M
 print("M="+str(M))
-
-# Выводим столько битов, сколько нужно пользователю
-how_many = int(input("Сколько элементов вывести: "))
-seqs = int(ceil( how_many / M))
-print((sequence * seqs)[:how_many])
+print(sequence)
 
 # Начальную последовательность можно сохранить
-save = input("Сохранить изначальную последовательность (y/n)? ")
+save = input("Сохранить стартовую последовательность (y/n)? ")
 
 # Сохраням в файл
 if save == 'y':
-	text = ''.join([str(x) for x in alg.initstate])
-	with open(KEY_FILE, 'w') as key_file:
-		key_file.write(text)
+	text = ''.join([str(x) for x in starting])
+	with open(START_FILE, 'w') as start_file:
+		start_file.write(text)

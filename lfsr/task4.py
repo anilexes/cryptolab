@@ -1,29 +1,14 @@
-# Задание 4
-# Нужно устанвить numpy:
-# > pip install numpy
-import numpy as np
+# 4
 from lfsr import make_M_sequence
 
-KEY_FILE = 'key.txt'
-
-# Функция считывания файла в бинарном формате (как массив байтов)
-def bytes_from_file(filename, chunksize=8192):
-    with open(filename, "rb") as f:
-        while True:
-            chunk = f.read(chunksize)
-            if chunk:
-                for b in chunk:
-                    # Даём обработать этот байт извне
-                    yield b
-            else:
-                break
+START_FILE = 'start.txt'
 
 # Считываем начальную последовательность
-with open(KEY_FILE, 'r') as key_file:
-    starting = [int(x) for x in list(key_file.read())]
+with open(START_FILE, 'r') as start_file:
+    starting = [int(x) for x in list(start_file.read())]
 
 # Даём алгоритму выполниться
-sequence, M = make_M_sequence(polinom=[4,1], starting=np.array(starting))
+sequence, M, _ = make_M_sequence(polinom=[7,1], starting=starting)
 
 # Задаём действие
 done = False
@@ -56,11 +41,23 @@ def get_byte(sequence):
         bn += 8
     return int(''.join([str(x) for x in res]), base=2)
 
+# Функция считывания файла в бинарном формате (как массив байтов)
+def bytes_from_file(filename, chunksize=8192):
+    with open(filename, "rb") as f:
+        while True:
+            chunk = f.read(chunksize)
+            if chunk:
+                for b in chunk:
+                    # Даём обработать этот байт извне
+                    yield b
+            else:
+                break
+
 # Зашифровка и расшифровка происходит ОДИНАКОВО
 # Используем один и тот же алгоритм
 for b in bytes_from_file(file):
 	result.append(
-            # Побайтовый xor с сгенерированной последовательностью - и есть шифрование
+         # Побайтовый xor с сгенерированной последовательностью - и есть шифрование
 		np.bitwise_xor(get_byte(sequence), b)
 	)
         
