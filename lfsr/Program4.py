@@ -2,7 +2,7 @@
 # Нужно устанвить numpy:
 # > pip install numpy
 import numpy as np
-from LFSR import LFSR
+from lfsr import make_M_sequence
 
 KEY_FILE = 'key.txt'
 
@@ -20,14 +20,10 @@ def bytes_from_file(filename, chunksize=8192):
 
 # Считываем начальную последовательность
 with open(KEY_FILE, 'r') as key_file:
-    initstate = [int(x) for x in list(key_file.read())]
-
-# Используем дефолтный полином x^4 + x + 1
-alg = LFSR(polinom=[4,1], initstate=np.array(initstate))
+    starting = [int(x) for x in list(key_file.read())]
 
 # Даём алгоритму выполниться
-alg.process()
-sequence = alg.getMSequence()
+sequence, M = make_M_sequence(polinom=[4,1], starting=np.array(starting))
 
 # Задаём действие
 done = False
@@ -47,12 +43,25 @@ while not done:
 
 result = []
 
+bn = 0
+def get_byte(sequence):
+    global bn
+    if M < 8:
+        sequence = (sequence * 4)[:8]        
+    res = sequence[bn:bn+8]
+    if len(res) < 8:
+        bn = 8 - len(res)
+        res = np.append(res,sequence[:bn])
+    else:
+        bn += 8
+    return int(''.join([str(x) for x in res]), base=2)
+
 # Зашифровка и расшифровка происходит ОДИНАКОВО
 # Используем один и тот же алгоритм
 for b in bytes_from_file(file):
 	result.append(
             # Побайтовый xor с сгенерированной последовательностью - и есть шифрование
-		np.bitwise_xor(int(''.join([str(x) for x in alg.getByte()]), base=2), b)
+		np.bitwise_xor(get_byte(sequence), b)
 	)
         
 # Пишем результат в файл

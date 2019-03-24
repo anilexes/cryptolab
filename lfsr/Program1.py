@@ -6,7 +6,7 @@
 
 import numpy as np
 from math import ceil
-from LFSR import LFSR
+from lfsr import LFSR, make_M_sequence
 
 KEY_FILE = 'key.txt'
 
@@ -22,18 +22,13 @@ if load == 'y':
 
 print(initstate)
 
-# Создаём объект класса LFSR для полиндрома x^4 + x + 1
-alg = LFSR(polinom=[4,1], initstate=np.array(initstate))
-
-# Запускаем работу алгоритма (генериуем битовую последовательность)
-alg.process()
-
-# Получаем эту последовательность
-sequence = alg.getMSequence()
+sequence, M = make_M_sequence(polinom=[4,1], starting=np.array(initstate))
+# Вывод M
+print("M="+str(M))
 
 # Выводим столько битов, сколько нужно пользователю
 how_many = int(input("Сколько элементов вывести: "))
-seqs = int(ceil( how_many / alg.expectedPeriod))
+seqs = int(ceil( how_many / M))
 print((sequence * seqs)[:how_many])
 
 # Начальную последовательность можно сохранить
