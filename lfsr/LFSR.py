@@ -5,7 +5,7 @@ def make_M_sequence(polinom, starting=None, N=None):
     # Максимальный индекс
     st = np.max(polinom)
     # Проверка на начальную последовательность 
-    if not len(starting) or len(starting) < st:
+    if starting == None or not len(starting) or len(starting) < st:
         starting = np.random.randint(0,2,np.max(polinom))
     else:
         starting = np.array(starting)

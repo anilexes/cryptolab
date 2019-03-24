@@ -2,7 +2,7 @@ import numpy as np
 from lfsr import make_M_sequence
 from math import ceil
 
-res, M = make_M_sequence(polinom=[7,1], starting=[])
+res, M, _ = make_M_sequence(polinom=[7,1])
 combinations = []
 k = 4
 freedom = pow(2,k)
