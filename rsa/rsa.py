@@ -84,61 +84,54 @@ def rsa_keys(L):
 (e, n), (d, n) = rsa_keys(L=128)
 
 # Задание 1
+print('Задание 1')
+print('-'*20)
+
+print()
+print('Запись public.txt')
+
 with open('public.txt', 'w') as public_f:
     print(e, n)
     public_f.write("{} {}".format(e,n))
+
+print()
+print('Запись private.txt')
 
 with open('private.txt', 'w') as private_f:
     print(d, n)
     private_f.write("{} {}".format(d,n))
 
+print()
+print('Файлы public.txt и private.txt записаны')
+
 # Задание 2
 # Принимаем строку 16 символов
-def fast_power(base, power):
-    """
-    Returns the result of a^b i.e. a**b
-    We assume that a >= 1 and b >= 0
+print()
+print('Задание 2')
+print('-'*20)
+print()
 
-    Remember two things!
-     - Divide power by 2 and multiply base to itself (if the power is even)
-     - Decrement power by 1 to make it even and then follow the first step
-    """
+string = 'this is a text 1'
 
-    result = 1
-    while power > 0:
-        # If power is even
-        if power % 2 == 0:
-            # Divide the power by 2
-            power = power / 2
-            # Multiply base to itself
-            base = base * base
-        else:
-            # Decrement the power by 1 and make it even
-            power = power - 1
-            # Take care of the extra value that we took out
-            # We will store it directly in result
-            result = result * base
-
-            # Now power is even, so we can follow our previous procedure
-            power = power / 2
-            base = base * base
-
-    return result
-
-
-
-string = '0123456789abcdef'
+print('Изначальный текст текст')
+print(string)
 
 encoded = []
 for letter in string:
     ascii_value = ord(letter)
     encoded.append(pow(ascii_value, e, n))
 
+print()
+print('Зашифрованные данные')
+print(encoded)
+
 decoded = []
 for enc_letter in encoded:
     decoded.append(pow(enc_letter, d, n))
 
-print(encoded)
+print()
+print('Расшифрованный текст')
+
 for l in decoded:
     print(chr(l), end='')
 
