@@ -1,6 +1,10 @@
+import numpy as np
 import textwrap
 
+np.seterr(all='ignore')
+
 WORD = 32
+WORD_BASE = 2**WORD-1
 BLOCK = 512
 
 def wide(bits):
@@ -18,33 +22,33 @@ def wide(bits):
     return bits
 
 def F(a, b, c):
-    return a & b | ~a & c
+    return np.uint32(a & b | ~a & c)
 
 def G(a, b, c):
-    return a & b | a & c | b & c
+    return np.uint32(a & b | a & c | b & c)
 
 def H(a, b, c):
-    return a ^ b ^ c
+    return np.uint32(a ^ b ^ c)
 
 def r1(a, b, c, d, k, s, X):
-    str_res = '{0:b}'.format(a + F(b, c, d) + X[k])
+    str_res = '{0:b}'.format((a) + (F(b, c, d)) + (X[k]))
     return int(str_res[s:] + str_res[:s], base=2)
 
 def r2(a, b, c, d, k, s, X):
-    str_res = '{0:b}'.format(a + G(b, c, d) + X[k] + 0x5A827999)
+    str_res = '{0:b}'.format((a) + (G(b, c, d)) + (X[k]) + (0x5A827999))
     return int(str_res[s:] + str_res[:s], base=2)
 
 def r3(a, b, c, d, k, s, X):
-    str_res = '{0:b}'.format(a + H(b, c, d) + X[k] + 0x6ED9EBA1)
+    str_res = '{0:b}'.format((a) + (H(b, c, d)) + (X[k]) + (0x6ED9EBA1))
     return int(str_res[s:] + str_res[:s], base=2)
 
 def md4(bits):
     string = wide(bits)
 
-    A = 0x67452301
-    B = 0xefcdab89
-    C = 0x98badcfe
-    D = 0x10325476
+    A = np.uint32(0x67452301)
+    B = np.uint32(0xefcdab89)
+    C = np.uint32(0x98badcfe)
+    D = np.uint32(0x10325476)
 
 
     # Разбиваем текст на блоки 512 бит
@@ -52,7 +56,7 @@ def md4(bits):
 
     for chunk in chunks:
         X = textwrap.fill(chunk, WORD).split()
-        X = list(map(lambda x: int(x, base=2), X))
+        X = list(map(lambda x: np.uint32(int(x, base=2)), X))
 
         AA = A
         BB = B
@@ -113,19 +117,22 @@ def md4(bits):
         B = r3( B, C, D, A, 13, 15, X)
         B = r3( B, C, D, A, 15, 15, X)
 
-        A = A + AA
-        B = B + BB
-        C = C + CC
-        D = D + DD
+        A = (np.uint32(A) + np.uint32(AA))
+        B = (np.uint32(B) + np.uint32(BB))
+        C = (np.uint32(C) + np.uint32(CC))
+        D = (np.uint32(D) + np.uint32(DD))
 
-    print('{0:x}{1:x}{2:x}{3:x}'.format(A, B, C, D))
+    return '{0:08x}{1:08x}{2:08x}{3:08x}'.format(A, B, C, D)
 
 def str_to_bin(string):
     return ''.join(['{0:b}'.format(ord(x)) for x in string])
 
 a = str_to_bin('abc')
 b = a
-b = '0'+b[1:]
-a = '1'+a[1:]
-md4(a)
-md4(b)
+b = b[:7] +'0'+ b[7:]
+a = a[:7] +'1'+ a[7:]
+#print(a)
+#print(b)
+print(md4(a))
+print(md4(b))
+print(md4(str_to_bin("1")))
