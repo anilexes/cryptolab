@@ -1,64 +1,62 @@
 # 4
+import numpy as np
 from lfsr import make_M_sequence
 
 START_FILE = 'start.txt'
-
+POLINOM = [7,1]
 # Считываем начальную последовательность
 with open(START_FILE, 'r') as start_file:
-    starting = [int(x) for x in list(start_file.read())]
+    data = start_file.read()
+    starting = [int(x) for x in data]
 
 # Даём алгоритму выполниться
-sequence, M, _ = make_M_sequence(polinom=[7,1], starting=starting)
+sequence, M, starting = make_M_sequence(POLINOM, starting=starting)
 
 # Задаём действие
-done = False
-while not done:
-	done = True
-	action = input("Зашифровать или расшифровать (e/d)?")
+action = input("Зашифровать или расшифровать (e/d)?")
 
-	if action == 'e':
-		file = 'text.txt'
-		result_file = 'encoded.txt'
-	elif action == 'd':
-		file = 'encoded.txt'
-		result_file = 'decoded.txt'
-	else:
-		print("Нужно ввести e или d")
-		done = False
+if action == 'e':
+	file = 'text.txt'
+	result_file = 'encoded.txt'
+else:
+	file = 'encoded.txt'
+	result_file = 'decoded.txt'
 
-result = []
+result = [] # массив байт
 
-bn = 0
-def get_byte(sequence):
-    global bn
-    if M < 8:
-        sequence = (sequence * 4)[:8]        
+bn = 0 # индекс бита в послед-ти
+def get_byte_from_sequence(sequence):
+    global bn # наследуемый индекс бита    
     res = sequence[bn:bn+8]
     if len(res) < 8:
         bn = 8 - len(res)
         res = np.append(res,sequence[:bn])
     else:
         bn += 8
-    return int(''.join([str(x) for x in res]), base=2)
+    return int(''.join([str(x) for x in res]), base=2) # приводим 10ти ричную записать байтов в двоичную
 
 # Функция считывания файла в бинарном формате (как массив байтов)
-def bytes_from_file(filename, chunksize=8192):
+# считываем байти из файла
+def get_byte_from_file(filename):
+    bufsize = 1024
     with open(filename, "rb") as f:
         while True:
-            chunk = f.read(chunksize)
-            if chunk:
-                for b in chunk:
-                    # Даём обработать этот байт извне
-                    yield b
+            buffer = f.read(bufsize) # считываем в буфер 1024 байта
+            if buffer:
+                for byte in buffer:
+                    yield byte  # отдаём в цикл
             else:
                 break
 
 # Зашифровка и расшифровка происходит ОДИНАКОВО
 # Используем один и тот же алгоритм
-for b in bytes_from_file(file):
+for byte in get_byte_from_file(file):
 	result.append(
          # Побайтовый xor с сгенерированной последовательностью - и есть шифрование
-		np.bitwise_xor(get_byte(sequence), b)
+		np.bitwise_xor(
+            get_byte_from_sequence(sequence), 
+            byte
+        )
 	)
         
 # Пишем результат в файл

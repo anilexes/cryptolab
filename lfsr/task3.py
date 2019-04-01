@@ -1,24 +1,23 @@
 # 3
 from lfsr import make_M_sequence 
 from math import sqrt
-N = 15
+N = 16
 polinom = [13,1]
 ks = [1,2,8,9]
 
 sequence, M, starting = make_M_sequence(polinom=polinom, N=N)
 
-Sx = sequence.count("1")
+Sx = sequence.count("1") # считаем кол-во единиц и получаем сумму Sx
 
-
-Sums = {}
+Sums = {} # вычисялем сумму произведении элементов исходной и смещен посл-ти для каждого k 
 for k in ks:
-    Sums[k] = 0
+    Sums[k] = 0 # начальное значение для суммы 0
 
-    for i in range(N-1):
-        b = i + k
+    for i in range(N): # от 0 -15 (при условии, что N=16)
+        b = i + k # индекс x(i+k)
         if b >= N:
-            b = (i + k) % N
-        Sums[k] += int(sequence[i]) * int(sequence[b])
+            b = (i + k) % N # для того, чтобы не выйти за предел последовательности
+        Sums[k] += int(sequence[i]) * int(sequence[b]) # x(i)*y(i)
 
 for k in ks:
     R = float(N*Sums[k] - Sx*Sx) /  sqrt((N*Sx - Sx**2) * 2)

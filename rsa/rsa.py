@@ -5,7 +5,7 @@
 # public.txt, а закрытый – в файл private.txt.
 
 import math
-import sympy
+import sympy # для эффективной проверки числа на простоту
 from random import randint, choice
 
 FERM_NUMBERS = [17, 257, 65537]
@@ -17,12 +17,11 @@ def get_prime(bit_len, exclude=[]):
     last = int('1' + ('1' * (bit_len - 1)), base=2)
 
     while True:
-        num = randint(first, last)
-        found=True
+        num = randint(first, last) # генерирует рандомное число в диапазоне от первого до последнего числа
         if num in exclude:
             continue
 
-        if sympy.isprime(num) and not num in exclude:
+        if sympy.isprime(num) and not num in exclude: # проверка на простое число, если ДА ,то не игнорируем и возвращаем
             return num
 
         exclude.append(num)
@@ -43,7 +42,7 @@ def get_e(n, euler):
     return choice(less_than_n)
 
 # Параметр D
-def get_d(e, euler):
+def get_d(e, euler): # по расширенному алгоритму Евклида
     # e*d mod euler = 1
     a = e
     b = euler
@@ -52,8 +51,8 @@ def get_d(e, euler):
     u2 = 0
     v1 = 0
     while b != 0:
-        q = a // b
-        r = a % b
+        q = a // b # целочисленное деление
+        r = a % b # остатоот деления 
         a = b
         b = r
         r = u2
@@ -81,7 +80,7 @@ def rsa_keys(L):
 
 
 
-(e, n), (d, n) = rsa_keys(L=128)
+(e, n), (d, n) = rsa_keys(L=512)
 
 # Задание 1
 print('Задание 1')
@@ -89,6 +88,7 @@ print('-'*20)
 
 print()
 print('Запись public.txt')
+
 
 with open('public.txt', 'w') as public_f:
     print(e, n)
