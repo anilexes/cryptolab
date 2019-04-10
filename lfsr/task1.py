@@ -2,7 +2,7 @@
 from lfsr import make_M_sequence
 
 START_FILE = 'start.txt'
-POLINOM=[17,1]
+POLINOM=[31,3]
 
 r = input("Считать стартовую последовательность (да/нет)? ")
 

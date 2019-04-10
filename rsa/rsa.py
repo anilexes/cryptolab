@@ -13,7 +13,7 @@ FERM_NUMBERS = [17, 257, 65537]
 # Простое число с bit_len значащими битами в двоичной записи
 # exclude - массив чисел, которые исключаются
 def get_prime(bit_len, exclude=[]):
-    first = int('1' + ('0' * (bit_len - 1)), base=2)
+    first = int('1' + ('0' * (bit_len - 1)), base=2) # чтобы число было определенной битовой длины
     last = int('1' + ('1' * (bit_len - 1)), base=2)
 
     while True:
@@ -26,10 +26,30 @@ def get_prime(bit_len, exclude=[]):
 
         exclude.append(num)
 
+def get_random(bit_len, exclude=[]):
+    first = int('1' + ('0' * (bit_len - 1)), base=2)
+    last = int('1' + ('1' * (bit_len - 1)), base=2)
+
+    while True:
+        num = randint(first, last) # генерирует рандомное число в диапазоне от первого до последнего числа
+        if num in exclude:
+            continue
+
+        if not sympy.isprime(num) and not num in exclude: # проверка на простое число, если ДА ,то не игнорируем и возвращаем
+            return num
+
+        exclude.append(num)
+
 # Два случайных простых числа с L/2 значащими битами
 def get_2_primes(L):
     bit_len = round(L/2)
     a = get_prime(bit_len)
+    b = get_prime(bit_len, [a])
+    return a, b
+
+def get_2_random(L):
+    bit_len = round(L/2)
+    a = get_random(bit_len)
     b = get_prime(bit_len, [a])
     return a, b
 
@@ -67,8 +87,11 @@ def get_d(e, euler): # по расширенному алгоритму Евкл
     return d
 
 # Алгоритм RSA
-def rsa_keys(L):
-    p, q = get_2_primes(L)
+def rsa_keys(L, simple=True):
+    if simple:
+        p, q = get_2_primes(L)
+    else:
+        p, q = get_2_random(L)
     n = p*q
     euler = (p-1)*(q-1)
     e = get_e(n, euler)
@@ -80,7 +103,7 @@ def rsa_keys(L):
 
 
 
-(e, n), (d, n) = rsa_keys(L=512)
+(e, n), (d, n) = rsa_keys(L=128)
 
 # Задание 1
 print('Задание 1')
@@ -136,3 +159,44 @@ for l in decoded:
     print(chr(l), end='')
 
 print()
+
+
+
+# Задание 3
+def task3():
+    (e, n), (d, n) = rsa_keys(L=128, simple=False)
+    print()
+    print('Задание 3')
+    print('-'*20)
+    print()
+    print(e, n)
+    print(d, n)
+
+    string = 'this is a text 1'
+
+    print('Изначальный текст текст')
+    print(string)
+
+    encoded = []
+    for letter in string:
+        ascii_value = ord(letter)
+        encoded.append(pow(ascii_value, e, n))
+
+    print()
+    print('Зашифрованные данные')
+    print(encoded)
+
+    decoded = []
+    for enc_letter in encoded:
+        decoded.append(pow(enc_letter, d, n))
+
+    print()
+    print('Расшифрованный текст')
+
+    for l in decoded:
+        print(l)
+        print(chr(l), end='')
+
+    print()
+
+#task3()

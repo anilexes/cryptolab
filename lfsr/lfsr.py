@@ -16,7 +16,7 @@ def make_M_sequence(polinom, starting=None, N=None): #starting - нач.посл
     if not N:
         N = M
     print(M)
-    for i in range(M): # range создает массив упорядоченных символов
+    for i in range(N): # range создает массив упорядоченных символов
         # [10, 5, 1]
         # bit = 1
         bit = starting[polinom[0]-1]# получаем индекс первого элемента для сложения по модулю 2

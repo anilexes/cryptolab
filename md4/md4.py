@@ -7,15 +7,20 @@ WORD = 32
 WORD_BASE = 2**WORD-1
 BLOCK = 512
 
+# Этап расширения
 def wide(bits):
     # Первый этап
     bits += '1'
     l = len(bits)
-    additional = 448 - (l % BLOCK)
-    bits += ('0' * additional)
 
+    additional = 448 - (l % BLOCK)
+    if additional < 0:
+        to_add_len += 512;
+
+    bits += ('0' * additional)
     # Второй этап
     additional = '{0:b}'.format(l).rjust(64, '0') # двоичная запись справа налево
+    # "00000..000 000011..111"
     first_add = additional[32:64] # начальные 32 бита
     second_add = additional[:32] # конечные 32 бита
     bits += (first_add + second_add)
@@ -35,11 +40,11 @@ def r1(a, b, c, d, k, s, X):
     return int(str_res[s:] + str_res[:s], base=2)
 
 def r2(a, b, c, d, k, s, X):
-    str_res = '{0:b}'.format((a) + (G(b, c, d)) + (X[k]) + (0x5A827999))
+    str_res = '{0:b}'.format((a) + (G(b, c, d)) + (X[k]) + np.uint32(0x5A827999))
     return int(str_res[s:] + str_res[:s], base=2)
 
 def r3(a, b, c, d, k, s, X):
-    str_res = '{0:b}'.format((a) + (H(b, c, d)) + (X[k]) + (0x6ED9EBA1))
+    str_res = '{0:b}'.format((a) + (H(b, c, d)) + (X[k]) + np.uint32(0x6ED9EBA1))
     return int(str_res[s:] + str_res[:s], base=2)
 
 def md4(bits):
