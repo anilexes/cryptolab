@@ -132,12 +132,12 @@ def md4(bits):
 def str_to_bin(string):
     return ''.join(['{0:b}'.format(ord(x)) for x in string])
 
-a = str_to_bin('abc')
+a = str_to_bin('78967')
 b = a
 b = b[:7] +'0'+ b[7:]
 a = a[:7] +'1'+ a[7:]
 #print(a)
 #print(b)
-print(md4(a))
-print(md4(b))
-print(md4(str_to_bin("1")))
+print(a, md4(a))
+print(b, md4(b))
+print("ыфвлооовлд", md4(str_to_bin("ыфвлооовлд")))
