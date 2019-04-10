@@ -37,15 +37,15 @@ def H(a, b, c):
 
 def r1(a, b, c, d, k, s, X):
     str_res = '{0:b}'.format((a) + (F(b, c, d)) + (X[k]))
-    return int(str_res[s:] + str_res[:s], base=2)
+    return np.uint32(int(str_res[s:] + str_res[:s], base=2))
 
 def r2(a, b, c, d, k, s, X):
     str_res = '{0:b}'.format((a) + (G(b, c, d)) + (X[k]) + np.uint32(0x5A827999))
-    return int(str_res[s:] + str_res[:s], base=2)
+    return np.uint32(int(str_res[s:] + str_res[:s], base=2))
 
 def r3(a, b, c, d, k, s, X):
     str_res = '{0:b}'.format((a) + (H(b, c, d)) + (X[k]) + np.uint32(0x6ED9EBA1))
-    return int(str_res[s:] + str_res[:s], base=2)
+    return np.uint32(int(str_res[s:] + str_res[:s], base=2))
 
 def md4(bits):
     string = wide(bits)
